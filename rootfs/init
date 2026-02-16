@@ -5,6 +5,6 @@ mount -t sysfs none /sys
 mount -t devtmpfs none /dev
 
 clear
-echo "Welcome! Type 'help' for commands"
 
-exec /bin/rsh
+/home/user/bin/ui-main
+/bin/rsh

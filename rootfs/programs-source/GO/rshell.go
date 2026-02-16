@@ -5,33 +5,32 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 )
 
 func main() {
 	os.Setenv("PATH", "/home/user/bin:/bin:/home/user/sbin:/sbin")
-	// uncomment if you want to debug $PATH
-	// fmt.Println(os.Getenv("PATH"))
 
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
 		cwd, _ := os.Getwd()
 		home := "/home/user"
-		dir := home
 
 		// ~ = /home/user
 		if strings.HasPrefix(cwd, home) {
 			cwd = "~" + strings.TrimPrefix(cwd, home)
 		}
 
-		// ~/path support
-		if strings.HasPrefix(dir, "~") {
-			home, _ := os.UserHomeDir()
-			dir = strings.Replace(dir, "~", home, 1)
+		// определить символ prompt
+		prompt := "$ "
+		currentUser, err := user.Current()
+		if err == nil && currentUser.Uid == "0" {
+			prompt = "# "
 		}
 
-		fmt.Print(cwd, " $ ")
+		fmt.Print(cwd, " ", prompt)
 
 		line, _ := reader.ReadString('\n')
 		line = strings.TrimSpace(line)
@@ -46,6 +45,7 @@ func main() {
 		switch args[0] {
 
 		case "cd":
+			dir := home
 			if len(args) > 1 {
 				dir = args[1]
 
